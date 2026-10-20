@@ -1,3 +1,4 @@
+import { AmbientBackdrop } from "./AmbientBackdrop";
 import * as T from "three";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
@@ -19,8 +20,10 @@ export class BouquetScene {
   camera = new T.PerspectiveCamera(38, 1, 0.1, 100);
   controls: OrbitControls;
   private flowers: Flower[] = [];
+  private backdrop = new AmbientBackdrop();
   private frame = 0;
   private start = performance.now();
+  private ambientStart = performance.now();
   private active = false;
   private reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   private heartStart = 0;
@@ -66,6 +69,7 @@ export class BouquetScene {
     this.scene.environment = this.environment.texture;
     this.scene.environmentIntensity = 0.85;
     this.scene.background = new T.Color(0x06142b);
+    this.scene.add(this.backdrop);
     studio.dispose();
     pmrem.dispose();
     this.renderer.transmissionResolutionScale = innerWidth < 700 ? 0.35 : 0.6;
@@ -677,6 +681,7 @@ export class BouquetScene {
       this.resize();
       this.slowFrames++;
     }
+    this.backdrop.tick((now - this.ambientStart) / 1000, this.renderer.getPixelRatio());
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
   };
