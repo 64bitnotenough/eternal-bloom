@@ -46,6 +46,7 @@ export class BouquetScene {
     palette: string[],
     private onFlower: (n: number, count: number) => void,
     private onSecret: () => void,
+    private minimal = false,
   ) {
     this.renderer = new T.WebGLRenderer({
       antialias: devicePixelRatio < 2,
@@ -356,6 +357,8 @@ export class BouquetScene {
         depthWrite: false,
       }),
     );
+    this.particles.visible = !this.minimal;
+    this.halo.visible = !this.minimal;
     this.scene.add(this.particles);
     const hp: T.Vector3[] = [];
     for (let i = 0; i < 100; i++) {
@@ -563,7 +566,7 @@ export class BouquetScene {
     this.halo.userData.start = performance.now();
     this.visited.add(id);
     this.onFlower(id, this.visited.size);
-    if (this.visited.size >= 5 && !this.heartStart) {
+    if (!this.minimal && this.visited.size >= 5 && !this.heartStart) {
       this.heartStart = performance.now();
       this.onSecret();
     }
